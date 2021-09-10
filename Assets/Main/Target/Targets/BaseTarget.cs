@@ -6,26 +6,31 @@ using UnityEngine;
 
 public abstract class BaseTarget : MonoBehaviour, ISuckable
 {
-    [SerializeField] protected float suckedTime = 1f;
-    [SerializeField] protected int score = 0;
+    public ReactiveProperty<bool> Sucking { get; } = new ReactiveProperty<bool>();
 
-    public ReactiveProperty<bool> Sucking => sucking;
-
-    private readonly ReactiveProperty<bool> sucking = new ReactiveProperty<bool>();
+    private MainGameManager mainGameManager;
     private float suckedTimer = 0f;
     private bool prevSucked = false;
     private bool nextSucked = false;
     private bool nowSucked = false;
-    private MainGameManager mainGameManager;
+    private float suckedTime = 1f;
+    private int score = 0;
+    private float height = 0;
     
     private void Awake()
     {
         mainGameManager = FindObjectOfType<MainGameManager>();
     }
+    public void Init(float suckedTime, int score, float height)
+    {
+        this.suckedTime = suckedTime;
+        this.score = score;
+        this.height = height;
+    }
 
     private void Start()
     {
-        sucking.SkipLatestValueOnSubscribe().Subscribe(sucked =>
+        Sucking.SkipLatestValueOnSubscribe().Subscribe(sucked =>
         {
             if (suckedTimer >= suckedTime)
             {

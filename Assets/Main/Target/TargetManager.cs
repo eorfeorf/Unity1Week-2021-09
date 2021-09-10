@@ -21,8 +21,10 @@ public sealed class TargetManager : MonoBehaviour
         // エネミーの生成
         for(var i = 0; i < targetNums; ++i)
         {
-            var prefab = GetTargetPrefab(GetMakeTargetKind());
-            Instantiate(prefab);
+            var kind = GetMakeTargetKind();
+            var data = GetTargetPrefab(kind);
+            var t = Instantiate(data.Prefab) as BaseTarget;
+            t.Init(data.SuckTime, data.Score, data.Height);
         }
     }
 
@@ -32,8 +34,8 @@ public sealed class TargetManager : MonoBehaviour
         return TargetData.eKind.Human;
     }
 
-    private GameObject GetTargetPrefab(TargetData.eKind kind)
+    private TargetData GetTargetPrefab(TargetData.eKind kind)
     {
-        return targetData[(int)kind].Prefab;
+        return targetData[(int)kind];
     }
 }

@@ -6013,6 +6013,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   suckedTime: 5
   score: 300
+  height: 9.5
 --- !u!1 &6910129367697151100
 GameObject:
   m_ObjectHideFlags: 0

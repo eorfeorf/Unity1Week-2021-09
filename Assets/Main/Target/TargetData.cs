@@ -10,5 +10,8 @@ public struct TargetData
     }
     
     public eKind Kind;
-    public GameObject Prefab;
+    public BaseTarget Prefab;
+    public float SuckTime;
+    public int Score;
+    public float Height;
 }
