@@ -4,16 +4,18 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Object = UnityEngine.Object;
+using Random = UnityEngine.Random;
 
 public sealed class TargetManager : MonoBehaviour
 {
-    [SerializeField] private TargetData[] targetData;
-
     private int targetNums = 0;
-
-    public void Init(int targetNums)
+    private MainGameManager.TargetDataSet[] targetDataSet;
+    
+    public void Init(int targetNums, MainGameManager.TargetDataSet[] targetData)
     {
         this.targetNums = targetNums;
+        this.targetDataSet = targetData;
+        InitTargets();
     }
 
     private void InitTargets()
@@ -28,14 +30,14 @@ public sealed class TargetManager : MonoBehaviour
         }
     }
 
-    private static TargetData.eKind GetMakeTargetKind()
+    private static MainGameManager.eKind GetMakeTargetKind()
     {
         // TODO:生成アルゴリズムを考える.
-        return TargetData.eKind.Human;
+        return (MainGameManager.eKind)Random.Range(0, 4);
     }
 
-    private TargetData GetTargetPrefab(TargetData.eKind kind)
+    private TargetDataScriptableObject GetTargetPrefab(MainGameManager.eKind kind)
     {
-        return targetData[(int)kind];
+        return targetDataSet[(int)kind].data;
     }
 }

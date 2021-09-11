@@ -1,49 +1,33 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UniRx;
 using UnityEditor.VersionControl;
 using UnityEngine;
 
 [RequireComponent(typeof(PlayerMover))]
 public class Player : MonoBehaviour
 {
-    [SerializeField] private LayerMask layerMask;
-    
-    private PlayerMover mover;
-    private int targetLayer;
-    private RaycastHit[] hits = new RaycastHit[10];
+    private CollisionNotifier notifier;
     
     private void Awake()
     {
-        mover = GetComponent<PlayerMover>();
+        notifier = GetComponentInChildren<CollisionNotifier>();
     }
 
-    private void Update()
+    private void Start()
     {
-        RaycastTarget();
-    }
-
-    private void RaycastTarget()
-    {
-        Debug.DrawRay(transform.position, -transform.up * mover.Height, Color.red);
-        if (Physics.RaycastNonAlloc(transform.position, -transform.up, hits, mover.Height, layerMask) <= 0) return;
-        
-        foreach (var hit in hits)
+        notifier.HitInfo.SkipLatestValueOnSubscribe().Subscribe(hitInfo =>
         {
-            if (hit.collider == null)
+            //Debug.Log($"Hit:{transform.name}");
+            if (hitInfo.Collision.transform.gameObject.GetComponentInParent<ISuckable>() is { } suckable)
             {
-                continue;
-            }
-                
-            Debug.Log("Hit");
-            if (hit.transform.gameObject.GetComponentInParent<ISuckable>() is ISuckable suckable)
-            {
-                suckable.Sucking.SetValueAndForceNotify(true);
+                suckable.Sucking.SetValueAndForceNotify(hitInfo.Hitting);
             }
             else
             {
-                Debug.LogError("Can't get ISuckable.");
+                Debug.LogError("Could not get ISuckable.");
             }
-        }
+        }).AddTo(this);
     }
 }

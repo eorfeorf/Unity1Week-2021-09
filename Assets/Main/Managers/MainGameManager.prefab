@@ -25,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1849882596663846644}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 11.560151, y: -2.02695, z: -10.11844}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -43,4 +43,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2b684b45e5e5af49a55a88c4da39c21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetNums: 100
+  scorePrefab: {fileID: 7753677433894522513, guid: 1ba1f91611987f54797e84afd3110a5b, type: 3}
+  targetManagerPrefab: {fileID: 4851273625591021369, guid: e652acbc1db9ebd4294c34461bf59265, type: 3}
+  targetNums: 30
+  targetData:
+  - kind: 0
+    data: {fileID: 11400000, guid: 781ea3926135c8c4b947b8d99c840b11, type: 2}
+  - kind: 1
+    data: {fileID: 11400000, guid: f0b391916596cb44d81525937aeab614, type: 2}
+  - kind: 2
+    data: {fileID: 11400000, guid: 4bd85ee62d11bee45bcac66cf5fa90d0, type: 2}
+  - kind: 3
+    data: {fileID: 11400000, guid: 6339e10bcc0b57642b541164706bd480, type: 2}
