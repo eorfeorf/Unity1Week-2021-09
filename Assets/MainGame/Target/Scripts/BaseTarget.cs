@@ -9,7 +9,8 @@ using Random = UnityEngine.Random;
 public abstract class BaseTarget : MonoBehaviour, ISuckable
 {
     public ReactiveProperty<bool> Sucking { get; } = new ReactiveProperty<bool>();
-    
+    public IReactiveProperty<BaseTarget> Destroyed { get; } = new ReactiveProperty<BaseTarget>();
+
     private MainGameManager mainGameManager;
     private float suckedTimer = 0f;
     private float suckedTime = 1f;
@@ -51,6 +52,7 @@ public abstract class BaseTarget : MonoBehaviour, ISuckable
             if (suckedTimer >= suckedTime)
             {
                 Sucked();
+                return;
             }
             suckedTimer += Time.deltaTime;
         }
@@ -58,11 +60,17 @@ public abstract class BaseTarget : MonoBehaviour, ISuckable
         {
             suckedTimer = 0f;
         }
+        
+        
     }
 
     private void Sucked()
     {
-        mainGameManager.Score.AddScore.Value = score;
+        if(mainGameManager.Score != null)
+        {
+            mainGameManager.Score.AddScore.Value = score;
+        }
+        Destroyed.Value = this;
         Destroy(gameObject);
     }
 }

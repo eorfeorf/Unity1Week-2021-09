@@ -10,7 +10,6 @@ public class ScreenFader : MonoBehaviour
     [SerializeField] private ForwardRendererData rendererData;
     
     private readonly Color defaultColor = new Color(255f/32f,255f/32f,255f/32f,1f);
-    
     private Material mat;
     private float timer;
 

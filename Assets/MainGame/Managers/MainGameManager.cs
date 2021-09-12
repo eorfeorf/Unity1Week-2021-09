@@ -1,38 +1,38 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Resources;
+using System.Threading.Tasks;
+using UniRx;
 using UnityEngine;
 
 public class MainGameManager : MonoBehaviour
 {
-    public enum eKind
-    {
-        Human, Tree, House, Car, Max
-    }
-
-    [Serializable]
-    public class TargetDataSet
-    {
-        public eKind kind;
-        public TargetDataScriptableObject data;
-    }
-    
     [SerializeField] private Score scorePrefab;
     [SerializeField] private TargetManager targetManagerPrefab;
     [SerializeField] private int targetNums;
-    [SerializeField] private TargetDataSet[] targetData = new TargetDataSet[(int)eKind.Max];
+    [SerializeField] private TargetDataSet[] targetData = new TargetDataSet[(int)TargetKind.Max];
 
     public Score Score { get; private set; }
 
+    private TargetManager targetManager;
+    private ISceneSequencer sequencer;
+
     private void Awake()
     {
+        // シーケンサ.
+        sequencer = GetComponent<SceneSequencerBase>();
+        
         // スコア.
-        Score = Instantiate(scorePrefab, transform);
+        //Score = Instantiate(scorePrefab, transform);
         
         // 敵.
-        var TargetManager = Instantiate(targetManagerPrefab, transform);
-        TargetManager.Init(targetNums, targetData);
+        targetManager = Instantiate(targetManagerPrefab, transform).Init(targetNums, targetData);
+        targetManager.AllDestroyed.SkipLatestValueOnSubscribe().Subscribe(_ =>
+        {
+            Reset();
+        }).AddTo(this);
+    }
+
+    private void Reset()
+    {
+        sequencer.LoadScene("Main");
     }
 }

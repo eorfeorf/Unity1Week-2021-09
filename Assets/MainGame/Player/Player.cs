@@ -1,8 +1,4 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UniRx;
-using UnityEditor.VersionControl;
 using UnityEngine;
 
 [RequireComponent(typeof(PlayerMover))]

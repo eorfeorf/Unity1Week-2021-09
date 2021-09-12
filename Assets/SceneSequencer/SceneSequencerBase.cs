@@ -12,7 +12,13 @@ public class SceneSequencerBase : MonoBehaviour, ISceneSequencer
 
     private void Awake()
     {
+        //fader = gameObject.AddComponent<ScreenFader>();
         fader = (ScreenFader)FindObjectOfType(typeof(ScreenFader));   
+    }
+
+    public void LoadNextScene()
+    {
+        SceneManager.LoadScene(nextScene);
     }
 
     public void LoadScene(string sceneName)
@@ -22,8 +28,6 @@ public class SceneSequencerBase : MonoBehaviour, ISceneSequencer
 
     public void LoadSceneAsync(string sceneName)
     {
-        SceneManager.LoadSceneAsync(sceneName);
+        //SceneManager.LoadSceneAsync(sceneName);
     }
-    
-    
 }
