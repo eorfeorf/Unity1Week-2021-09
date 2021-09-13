@@ -15,12 +15,13 @@ public abstract class BaseTarget : MonoBehaviour, ISuckable
     private float suckedTimer = 0f;
     private float suckedTime = 1f;
     private int score = 0;
-
     private bool isSucking;
+    private TargetSuckAnimation targetSuckAnimation;
     
     private void Awake()
     {
         mainGameManager = FindObjectOfType<MainGameManager>();
+        targetSuckAnimation = gameObject.AddComponent<TargetSuckAnimation>();
     }
 
     public  void Init(float suckedTime, int score, float height)
@@ -60,8 +61,8 @@ public abstract class BaseTarget : MonoBehaviour, ISuckable
         {
             suckedTimer = 0f;
         }
-        
-        
+
+        targetSuckAnimation.SuckRatio.Value = suckedTimer / suckedTime;
     }
 
     private void Sucked()
