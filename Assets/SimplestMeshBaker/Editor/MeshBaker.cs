@@ -22,7 +22,7 @@ namespace SimplestMeshBaker
         private static Resolving uvResolving;
 
         private static int objectNum;
-
+        
         [MenuItem("GameObject/Bake Meshes", false, 0)]
         private static void BakeMeshes(MenuCommand menuCommand)
         {
@@ -30,7 +30,6 @@ namespace SimplestMeshBaker
             {
                 return;
             }
-
             //Prevent executing multiple times
             if (Selection.objects.Length > 1)
             {
@@ -39,7 +38,7 @@ namespace SimplestMeshBaker
                     return;
                 }
             }
-
+            
             List<Vector3> vertexes = new List<Vector3>();
             List<Vector3> normals = new List<Vector3>();
             List<Vector4> tangents = new List<Vector4>();
@@ -79,7 +78,6 @@ namespace SimplestMeshBaker
                 {
                     Bake(mesh, vertexes, normals, tangents, colors, uvs, triangles, material);
                 }
-
                 foreach (var meshToBake in meshesWithMaterials)
                 {
                     foreach (var mesh in meshToBake.Value)
@@ -87,7 +85,6 @@ namespace SimplestMeshBaker
                         Bake(mesh, vertexes, normals, tangents, colors, uvs, triangles, material);
                     }
                 }
-
                 if (vertexes.Count > 0)
                 {
                     CreateObject(vertexes, normals, tangents, colors, uvs, triangles, material);
@@ -96,7 +93,7 @@ namespace SimplestMeshBaker
                     tangents.Clear();
                     colors.Clear();
                     uvs.Clear();
-                    triangles.Clear();
+                    triangles.Clear();                    
                 }
             }
             else
@@ -105,7 +102,6 @@ namespace SimplestMeshBaker
                 {
                     Bake(mesh, vertexes, normals, tangents, colors, uvs, triangles, null);
                 }
-
                 if (vertexes.Count > 0)
                 {
                     CreateObject(vertexes, normals, tangents, colors, uvs, triangles, null);
@@ -116,14 +112,12 @@ namespace SimplestMeshBaker
                     uvs.Clear();
                     triangles.Clear();
                 }
-
                 foreach (var meshToBake in meshesWithMaterials)
                 {
                     foreach (var mesh in meshToBake.Value)
                     {
                         Bake(mesh, vertexes, normals, tangents, colors, uvs, triangles, meshToBake.Key);
                     }
-
                     CreateObject(vertexes, normals, tangents, colors, uvs, triangles, meshToBake.Key);
                     vertexes.Clear();
                     normals.Clear();
@@ -151,13 +145,11 @@ namespace SimplestMeshBaker
             {
                 meshesCount += bakedMeshes.Value.Count;
             }
-
             EditorUtility.DisplayDialog("Simplest Mesh Baker",
                 "Baked " + meshesCount + " meshes.", "Cool!");
         }
 
-        private static bool FillDataAndCheckResolving(Dictionary<Material, List<Mesh>> meshesWithMaterials,
-            List<Mesh> meshesWithoutMaterials)
+        private static bool FillDataAndCheckResolving(Dictionary<Material, List<Mesh>> meshesWithMaterials, List<Mesh> meshesWithoutMaterials)
         {
             colorResolving = Resolving.Not;
             normalsResolving = Resolving.Not;
@@ -169,9 +161,9 @@ namespace SimplestMeshBaker
             bool anyHasNotColors = false;
             bool anyHasNotNormals = false;
             bool anyHasNotUVs = false;
-
+            
             HashSet<Transform> transforms = new HashSet<Transform>();
-
+            
             foreach (GameObject selected in Selection.gameObjects)
             {
                 MeshFilter[] meshFilters = selected.GetComponentsInChildren<MeshFilter>();
@@ -181,20 +173,16 @@ namespace SimplestMeshBaker
                     {
                         continue;
                     }
-
                     Material material = null;
                     var mr = meshFilter.GetComponent<MeshRenderer>();
                     if (mr != null)
                     {
                         material = mr.sharedMaterial;
                     }
-
                     Mesh mesh = Instantiate(meshFilter.sharedMesh);
-                    HandleMesh(meshesWithMaterials, meshesWithoutMaterials, mesh, meshFilter.transform, material,
-                        transforms, ref anyHasNotNormals, ref anyHasNotColors, ref anyHasNotUVs, ref anyHasNormals,
-                        ref anyHasColors, ref anyHasUVs);
+                    HandleMesh(meshesWithMaterials, meshesWithoutMaterials, mesh, meshFilter.transform, material, transforms, ref anyHasNotNormals, ref anyHasNotColors, ref anyHasNotUVs, ref anyHasNormals, ref anyHasColors, ref anyHasUVs);
                 }
-
+                
                 SkinnedMeshRenderer[] skinnedMeshRenderers = selected.GetComponentsInChildren<SkinnedMeshRenderer>();
                 foreach (var skinnedMeshRenderer in skinnedMeshRenderers)
                 {
@@ -202,12 +190,9 @@ namespace SimplestMeshBaker
                     {
                         continue;
                     }
-
                     Material material = skinnedMeshRenderer.sharedMaterial;
                     Mesh mesh = BonesBaker.GetMeshFromSkinnedMeshRenderer(skinnedMeshRenderer);
-                    HandleMesh(meshesWithMaterials, meshesWithoutMaterials, mesh, skinnedMeshRenderer.transform,
-                        material, transforms, ref anyHasNotNormals, ref anyHasNotColors, ref anyHasNotUVs,
-                        ref anyHasNormals, ref anyHasColors, ref anyHasUVs);
+                    HandleMesh(meshesWithMaterials, meshesWithoutMaterials, mesh, skinnedMeshRenderer.transform, material, transforms, ref anyHasNotNormals, ref anyHasNotColors, ref anyHasNotUVs, ref anyHasNormals, ref anyHasColors, ref anyHasUVs);
                 }
             }
 
@@ -216,15 +201,13 @@ namespace SimplestMeshBaker
                    SetResolving(anyHasUVs, anyHasNotUVs, ref uvResolving, "uvs");
         }
 
-        private static void HandleMesh(Dictionary<Material, List<Mesh>> meshesWithMaterials,
-            List<Mesh> meshesWithoutMaterials, Mesh mesh,
+        private static void HandleMesh(Dictionary<Material, List<Mesh>> meshesWithMaterials, List<Mesh> meshesWithoutMaterials, Mesh mesh,
             Transform transform, Material material, HashSet<Transform> transforms, ref bool anyHasNotNormals,
-            ref bool anyHasNotColors, ref bool anyHasNotUVs, ref bool anyHasNormals, ref bool anyHasColors,
-            ref bool anyHasUVs)
+            ref bool anyHasNotColors, ref bool anyHasNotUVs, ref bool anyHasNormals, ref bool anyHasColors, ref bool anyHasUVs)
         {
             mesh.vertices = mesh.vertices.Select(transform.TransformPoint).ToArray();
             mesh.normals = mesh.normals.Select(transform.TransformDirection).ToArray();
-
+            
             if (material == null)
             {
                 meshesWithoutMaterials.Add(mesh);
@@ -240,15 +223,13 @@ namespace SimplestMeshBaker
                     meshesWithMaterials.Add(material, new List<Mesh>() {mesh});
                 }
             }
-
             transforms.Add(transform);
 
             CheckMeshAttributes(mesh, ref anyHasNotNormals, ref anyHasNotColors, ref anyHasNotUVs, ref anyHasNormals,
                 ref anyHasColors, ref anyHasUVs);
         }
 
-        private static void CheckMeshAttributes(Mesh mesh, ref bool anyHasNotNormals, ref bool anyHasNotColors,
-            ref bool anyHasNotUVs,
+        private static void CheckMeshAttributes(Mesh mesh, ref bool anyHasNotNormals, ref bool anyHasNotColors, ref bool anyHasNotUVs,
             ref bool anyHasNormals, ref bool anyHasColors, ref bool anyHasUVs)
         {
             bool hasNormals = mesh.vertexCount == mesh.normals.Length;
@@ -278,15 +259,12 @@ namespace SimplestMeshBaker
                 {
                     return false;
                 }
-
                 resolving = result == 0 ? Resolving.Remove : Resolving.Create;
             }
-
             return true;
         }
 
-        private static void CreateObject(List<Vector3> vertexes, List<Vector3> normals, List<Vector4> tangents,
-            List<Color> colors,
+        private static void CreateObject(List<Vector3> vertexes, List<Vector3> normals, List<Vector4> tangents, List<Color> colors,
             List<Vector2> uvs, List<int> triangles, Material material)
         {
             GameObject go = new GameObject();
@@ -302,17 +280,14 @@ namespace SimplestMeshBaker
             {
                 newMesh.SetNormals(normals);
             }
-
             if (tangents.Count != 0 && tangentsResolving != Resolving.Remove)
             {
                 newMesh.SetTangents(tangents);
             }
-
             if (colors.Count != 0 && colorResolving != Resolving.Remove)
             {
                 newMesh.SetColors(colors);
             }
-
             if (uvs.Count != 0 || uvResolving != Resolving.Remove)
             {
                 newMesh.SetUVs(0, uvs);
@@ -321,31 +296,9 @@ namespace SimplestMeshBaker
             newMesh.SetTriangles(triangles, 0);
             mf.sharedMesh = newMesh;
             mr.material = material;
-
-
-            // 生成したgoの親を設定する
-            // 選択したオブジェクトをキャッシュ.
-            var dict = Selection.gameObjects.ToDictionary(g => g.transform.GetHashCode(), g => g.transform);
-            var parent = dict.First().Value;
-            for (;;)
-            {
-                // 選択したオブジェクトで一番上の層に設定する
-                if (dict.ContainsKey(parent.parent.GetHashCode()))
-                {
-                    parent = parent.parent;
-                    continue;
-                }
-
-                // 選択した一番上の親に親がいればそこに付ける.
-                if(parent.parent != null)
-                {
-                    go.transform.SetParent(parent.parent);
-                }
-                break;
-            }
         }
 
-        private static void Bake(Mesh mesh, List<Vector3> vertexes, List<Vector3> normals, List<Vector4> tangents,
+        private static void Bake(Mesh mesh, List<Vector3> vertexes, List<Vector3> normals, List<Vector4> tangents, 
             List<Color> colors, List<Vector2> uvs, List<int> triangles, Material material)
         {
             //mesh may not have more than 65000 vertices.
@@ -365,7 +318,6 @@ namespace SimplestMeshBaker
             {
                 vertexes.Add(vertex);
             }
-
             foreach (int triangle in mesh.triangles)
             {
                 triangles.Add(triangle + startCount);
