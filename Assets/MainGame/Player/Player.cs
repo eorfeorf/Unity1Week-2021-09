@@ -15,7 +15,6 @@ public class Player : MonoBehaviour
     {
         notifier.HitInfo.SkipLatestValueOnSubscribe().Subscribe(hitInfo =>
         {
-            //Debug.Log($"Hit:{transform.name}");
             if (hitInfo.Collision.transform.gameObject.GetComponentInParent<ISuckable>() is { } suckable)
             {
                 suckable.Sucking.SetValueAndForceNotify(hitInfo.Hitting);
