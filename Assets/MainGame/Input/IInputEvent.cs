@@ -1,9 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UniRx;
-using UnityEngine;
 
-public interface IInputEvent
+public interface IInputEventProvider
 {
-    ReactiveProperty<bool> sucked { get; }
+    IReadOnlyReactiveProperty<bool> MainButton { get; }
+    IReadOnlyReactiveProperty<bool> SubButton { get; }
+    IReadOnlyReactiveProperty<float> Vertical { get; }
+    IReadOnlyReactiveProperty<float> Horizontal { get; }
 }
