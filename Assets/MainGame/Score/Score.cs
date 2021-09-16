@@ -1,12 +1,8 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UniRx;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class Score : MonoBehaviour
+public sealed class Score : MonoBehaviour, IScore
 {
     public ReactiveProperty<int> AddScore { get; } = new ReactiveProperty<int>();
 
