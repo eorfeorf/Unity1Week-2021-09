@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UniRx;
 using Unity.Mathematics;
 using UnityEngine;
@@ -9,7 +11,7 @@ using Random = UnityEngine.Random;
 public abstract class BaseTarget : MonoBehaviour, ISuckable
 {
     public ReactiveProperty<bool> Sucking { get; } = new ReactiveProperty<bool>();
-    public IReactiveProperty<BaseTarget> Destroyed { get; } = new ReactiveProperty<BaseTarget>();
+    public IReactiveProperty<BaseTarget> Destroyed { get; } = new ReactiveProperty<BaseTarget>(null);
 
     private MainGameManager mainGameManager;
     private float suckedTimer = 0f;
@@ -17,14 +19,18 @@ public abstract class BaseTarget : MonoBehaviour, ISuckable
     private int score = 0;
     private bool isSucking;
     private TargetSuckAnimation targetSuckAnimation;
-    
+    private TargetEffect targetEffect;
+    private CancellationToken cancellationToken;
+
     private void Awake()
     {
         mainGameManager = FindObjectOfType<MainGameManager>();
         targetSuckAnimation = gameObject.AddComponent<TargetSuckAnimation>();
+        targetEffect = gameObject.GetComponentInChildren<TargetEffect>();
+        cancellationToken = this.GetCancellationTokenOnDestroy();
     }
 
-    public  void Init(float suckedTime, int score, float height)
+    public void Init(float suckedTime, int score, float height)
     {
         this.suckedTime = suckedTime;
         this.score = score;
@@ -40,22 +46,31 @@ public abstract class BaseTarget : MonoBehaviour, ISuckable
 
     private void Start()
     {
-        Sucking.SkipLatestValueOnSubscribe().Subscribe(sucked =>
-        {
-            isSucking = sucked;
-        }).AddTo(this);
+        Sucking.SkipLatestValueOnSubscribe().Subscribe(sucked => { isSucking = sucked; }).AddTo(this);
     }
 
     private void Update()
     {
+        // 破棄された.
+        if (Destroyed.Value)
+        {
+            return;
+        }
+
+        // 吸い込み中.
         if (isSucking)
         {
             if (suckedTimer >= suckedTime)
             {
-                Sucked();
-                return;
+                // 吸い込み終わった.
+                Sucked(cancellationToken);
             }
-            suckedTimer += Time.deltaTime;
+            else
+            {
+                // まだ吸い込んでる.
+                suckedTimer += Time.deltaTime;
+                Mathf.Clamp(suckedTimer, 0f, suckedTime);
+            }
         }
         else
         {
@@ -65,13 +80,23 @@ public abstract class BaseTarget : MonoBehaviour, ISuckable
         targetSuckAnimation.SuckRatio.Value = suckedTimer / suckedTime;
     }
 
-    private void Sucked()
+    private async UniTaskVoid Sucked(CancellationToken ct)
     {
-        if(mainGameManager.Score != null)
+        // 破棄通知.
+        Destroyed.Value = this;
+
+        // スコア加算.
+        if (mainGameManager.Score != null)
         {
             mainGameManager.Score.AddScore.Value = score;
         }
-        Destroyed.Value = this;
-        Destroy(gameObject);
+
+        // エフェクト.
+        await targetEffect.PlayDestroyEffect(ct);
+
+        if (gameObject != null)
+        {
+            Destroy(gameObject);
+        }
     }
 }

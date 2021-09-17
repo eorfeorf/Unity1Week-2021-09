@@ -1,9 +1,12 @@
+using System;
 using UniRx;
 using UnityEngine;
 
 [RequireComponent(typeof(PlayerMover))]
 public class Player : MonoBehaviour
 {
+    public IReactiveProperty<Vector3> Position { get; } = new ReactiveProperty<Vector3>();
+
     private CollisionNotifier notifier;
     
     private void Awake()
@@ -24,5 +27,10 @@ public class Player : MonoBehaviour
                 Debug.LogError("Could not get ISuckable.");
             }
         }).AddTo(this);
+    }
+
+    private void Update()
+    {
+        Position.Value = transform.position;
     }
 }

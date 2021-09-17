@@ -13,7 +13,6 @@ public sealed class TargetManager : MonoBehaviour
 
     private int targetNums = 0;
     private TargetDataSet[] targetDataSet;
-
     private List<BaseTarget> targetList;
     
     public TargetManager Init(int targetNums, TargetDataSet[] targetData)
