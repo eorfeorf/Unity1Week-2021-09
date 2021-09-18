@@ -9,8 +9,9 @@ public class PlayerModelAnimation : MonoBehaviour
     
     void Update()
     {
-        var qxAngle = Mathf.Sin(Time.time * speed) * scale;
-        var qzAngle = Mathf.Cos(Time.time * speed) * scale;
+        var t = Time.time % (Mathf.PI * 2);
+        var qxAngle = Mathf.Sin(t * speed) * scale;
+        var qzAngle = Mathf.Cos(t * speed) * scale;
         var qx = Quaternion.AngleAxis(qxAngle, Vector3.right);
         var qz = Quaternion.AngleAxis(qzAngle, Vector3.forward);
         transform.localRotation = qx * (qz * transform.localRotation);
