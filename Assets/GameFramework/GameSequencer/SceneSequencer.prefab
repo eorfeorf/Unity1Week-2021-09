@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7092568357462010484}
   - component: {fileID: 7092568357462010483}
   m_Layer: 0
-  m_Name: GameSequencer
+  m_Name: SceneSequencer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
